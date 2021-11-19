@@ -3,6 +3,8 @@ version '1.0-SNAPSHOT'
 
 buildscript {
     repositories {
+        maven { url 'http://s3.qbuild.corp.qihoo.net:8360/nexus/content/groups/qbuild/' }
+        maven { url 'http://s3.qbuild.corp.qihoo.net:8360/nexus/content/groups/qbuild_test' }
         google()
         jcenter()
         maven { url "https://www.jitpack.io" }
@@ -15,6 +17,8 @@ buildscript {
 
 rootProject.allprojects {
     repositories {
+        maven { url 'http://s3.qbuild.corp.qihoo.net:8360/nexus/content/groups/qbuild/' }
+        maven { url 'http://s3.qbuild.corp.qihoo.net:8360/nexus/content/groups/qbuild_test' }
         google()
         jcenter()
         maven { url "https://www.jitpack.io" }
