@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.net.Uri;
+import androidx.core.content.FileProvider;
 
 import com.yalantis.ucrop.UCrop;
 import com.yalantis.ucrop.model.AspectRatio;
@@ -44,15 +45,25 @@ public class ImageCropperDelegate implements PluginRegistry.ActivityResultListen
 
         pendingResult = result;
 
-    File outputDir = activity.getCacheDir();
-    File outputFile;
-	if("png".equals(compressFormat)){
-        outputFile = new File(outputDir, "image_cropper_" + (new Date()).getTime() + ".png");
-	} else {
-		outputFile = new File(outputDir, "image_cropper_" + (new Date()).getTime() + ".jpg");
-	}
-        Uri sourceUri = Uri.fromFile(new File(sourcePath));
-        Uri destinationUri = Uri.fromFile(outputFile);
+        File outputDir = activity.getCacheDir();
+        File outputFile;
+        if ("png".equals(compressFormat)) {
+            outputFile = new File(outputDir, "image_cropper_" + (new Date()).getTime() + ".png");
+        } else {
+            outputFile = new File(outputDir, "image_cropper_" + (new Date()).getTime() + ".jpg");
+        }
+
+        // Use FileProvider for Uri compatibility with API 30+
+        Uri sourceUri = FileProvider.getUriForFile(
+            activity,
+            activity.getPackageName() + ".fileprovider",
+            new File(sourcePath)
+        );
+        Uri destinationUri = FileProvider.getUriForFile(
+            activity,
+            activity.getPackageName() + ".fileprovider",
+            outputFile
+        );
 
         UCrop.Options options = new UCrop.Options();
         options.setCompressionFormat("png".equals(compressFormat) ? Bitmap.CompressFormat.PNG : Bitmap.CompressFormat.JPEG);
@@ -87,6 +98,13 @@ public class ImageCropperDelegate implements PluginRegistry.ActivityResultListen
         if (ratioX != null && ratioY != null) {
             cropper.withAspectRatio(ratioX.floatValue(), ratioY.floatValue());
         }
+
+        // Grant URI permissions for UCrop
+        activity.grantUriPermission(
+            "com.yalantis.ucrop",
+            sourceUri,
+            Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION
+        );
 
         activity.startActivityForResult(cropper.getIntent(activity), UCrop.REQUEST_CROP);
     }
@@ -213,7 +231,7 @@ public class ImageCropperDelegate implements PluginRegistry.ActivityResultListen
         if ("square".equals(name)) {
             return new AspectRatio(null, 1.0f, 1.0f);
         } else if ("original".equals(name)) {
-            return new AspectRatio(activity.getString(R.string.ucrop_label_original).toUpperCase(),
+            return new AspectRatio("ORIGINAL",
                     CropImageView.SOURCE_IMAGE_ASPECT_RATIO, 1.0f);
         } else if ("3x2".equals(name)) {
             return new AspectRatio(null, 3.0f, 2.0f);
@@ -228,7 +246,7 @@ public class ImageCropperDelegate implements PluginRegistry.ActivityResultListen
         } else if ("16x9".equals(name)) {
             return new AspectRatio(null, 16.0f, 9.0f);
         } else {
-            return new AspectRatio(activity.getString(R.string.ucrop_label_original).toUpperCase(),
+            return new AspectRatio("ORIGINAL",
                     CropImageView.SOURCE_IMAGE_ASPECT_RATIO, 1.0f);
         }
     }

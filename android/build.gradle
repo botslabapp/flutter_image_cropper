@@ -2,25 +2,23 @@ group 'vn.hunghd.flutter.plugins.imagecropper'
 version '1.0-SNAPSHOT'
 
 buildscript {
+    ext.kotlin_version = '1.9.20'
     repositories {
-        maven { url 'http://s3.qbuild.corp.qihoo.net:8360/nexus/content/groups/qbuild/' }
-        maven { url 'http://s3.qbuild.corp.qihoo.net:8360/nexus/content/groups/qbuild_test' }
         google()
-        jcenter()
+        mavenCentral()
         maven { url "https://www.jitpack.io" }
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.6.3'
+        classpath 'com.android.tools.build:gradle:8.2.2'
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
     }
 }
 
 rootProject.allprojects {
     repositories {
-        maven { url 'http://s3.qbuild.corp.qihoo.net:8360/nexus/content/groups/qbuild/' }
-        maven { url 'http://s3.qbuild.corp.qihoo.net:8360/nexus/content/groups/qbuild_test' }
         google()
-        jcenter()
+        mavenCentral()
         maven { url "https://www.jitpack.io" }
     }
 }
@@ -28,15 +26,28 @@ rootProject.allprojects {
 apply plugin: 'com.android.library'
 
 android {
-    compileSdkVersion 28
+    namespace 'vn.hunghd.flutter.plugins.imagecropper'
+    compileSdk 35
 
     defaultConfig {
-        minSdkVersion 16
+        minSdk 16
+        targetSdk 35
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
+
     lintOptions {
         disable 'InvalidPackage'
     }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    buildFeatures {
+        buildConfig true
+    }
+
     dependencies {
         implementation 'com.github.yalantis:ucrop:2.2.7'
     }
