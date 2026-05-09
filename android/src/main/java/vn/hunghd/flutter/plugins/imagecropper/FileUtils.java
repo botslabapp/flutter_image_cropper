@@ -119,6 +119,9 @@ class FileUtils {
                 final int column_index = cursor.getColumnIndexOrThrow(column);
                 return cursor.getString(column_index);
             }
+        } catch (IllegalArgumentException e) {
+            // _data column may not exist on Android Q+ for SAF / content URIs.
+            // Fall through to return null so caller can use getPathFromRemoteUri.
         } finally {
             if (cursor != null) {
                 cursor.close();
